@@ -1,0 +1,7 @@
+scrapy:
+  #image: trcook/scrapy
+  # swap comments on image and build to get docker-compose to build instead of download
+  build: ./docker-scrapy
+  volumes: 
+    - ./:/scrapy
+  working_dir: /scrapy/congress
