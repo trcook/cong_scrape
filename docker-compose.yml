@@ -1,11 +1,21 @@
-scrapy:
+congress_scrapy_vol:
+  image: trcook/cong_scrape
+  # swap to build:
+  # build: ./congress
+  name: cong_scraper_volume
+  working_dir: /scrapy/congress
+
+
+get_plaws:
   image: trcook/docker-scrapy
   # swap comments on image and build to get docker-compose to build instead of download
   #build: ./docker-scrapy
   volumes:
-    - ./:/scrapy
+    - ./data:/data
+  volumes_from:
+    - congress_scrapy_vol
   working_dir: /scrapy/congress
-  command: ["scrapy", "crawl", "plaw", "-o", "/scrapy/out.csv"]
+  command: ["scrapy", "crawl", "plaw", "-o", "/data/out.csv"]
 
 
 congress:
