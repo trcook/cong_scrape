@@ -15,13 +15,13 @@ get_plaws:
   volumes_from:
     - congress_scrapy_vol
   working_dir: /scrapy/congress
-  command: ["scrapy", "crawl", "plaw", "-o", "/data/out.csv"]
+  command: ["scrapy", "crawl", "plaw", "-o", "/data/plaws.csv"]
 
 
-congress:
+congress_scrape:
   image: trcook/congress
   # swap comments on image and build to get docker-compose to build instead of download
   #build: ./docker-congress
   volumes:
     - ./data:/congress
-  command: ["bill_info_batch", "--file_input=./plaw.csv"]
+  command: ["bill_info_batch", "--file_input=./plaws.csv"]

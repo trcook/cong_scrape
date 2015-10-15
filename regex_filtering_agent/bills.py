@@ -50,13 +50,22 @@ def get_json(file_name):
 if __name__ == "__main__":
     PARSER = argparse.ArgumentParser(description='Process files and\
                                     return search results.')
-    PARSER.add_argument('integers', metavar='N', type=int, nargs='+',
-                        help='an integer for the accumulator')
-    PARSER.add_argument('--sum', dest='accumulate', action='store_const',
-                        const=sum, default=max,
-                        help='sum the integers (default: find the max)')
+    PARSER.add_argument('dir', metavar='<path>', type=str,
+                        help='the path to search')
+    PARSER.add_argument('--key',dest='search_key', metavar='search_key', type=str,
+                        help='the key to examine. E.g. \'summary\'',\
+                        default="summary")
+    PARSER.add_argument('--fields',dest='record_key', metavar='record_keys', type=str, nargs='+',
+                       help='the records to keep. E.g. \'summary enacted_as\'',\
+                        default="summary")
+    PARSER.add_argument('--regex',dest='regex', metavar='regex', type=str,
+                       help='the regex string to use (defaults to (\w{0,10}end(?:\w+?\s){0,6}fund.+?\s) )',\
+                        default="(\w{0,10}end(?:\w+?\s){0,6}fund.+?\s)")
     ARGS = PARSER.parse_args()
-    print ARGS.accumulate(ARGS.integers)
+    print ARGS.search_key
+    print ARGS.record_key
+    print ARGS.regex
+    print re.escape(ARGS.regex)
     if len(sys.argv) < 3:
         X = Bills(".")
         print "both path and regex pattern are needed"
@@ -66,7 +75,7 @@ if __name__ == "__main__":
         print len(sys.argv)
         print sys.argv
         sys.exit(1)
-    X.getrecords(["summary"])
-    X.search_records("match", "summary.text",\
-                    r"(\w{0,10}end(?:\w+?\s){0,6}fund.+?\s)")
+    X.getrecords(ARGS.record_key)
+    X.search_records("match", ARGS.search_key,\
+                     ARGS.regex)
     print [i['match_len'] for i in X.records if i['match_len'] > 0]
