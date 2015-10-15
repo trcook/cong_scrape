@@ -5,7 +5,7 @@ scrapy:
   volumes:
     - ./:/scrapy
   working_dir: /scrapy/congress
-  command: ["scrapy", "crawl", "plaw", "-o", "../out.csv"]
+  command: ["scrapy", "crawl", "plaw", "-o", "/scrapy/out.csv"]
 
 
 congress:
