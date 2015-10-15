@@ -2,6 +2,15 @@ scrapy:
   image: trcook/docker-scrapy
   # swap comments on image and build to get docker-compose to build instead of download
   #build: ./docker-scrapy
-  volumes: 
+  volumes:
     - ./:/scrapy
   working_dir: /scrapy/congress
+  command: ["scrapy", "crawl", "plaw", "-o", "../out.csv"]
+
+
+congress:
+  image: trcook/congress
+  # swap comments on image and build to get docker-compose to build instead of download
+  #build: ./docker-scrapy
+  volumes:
+    - ./:/congress
