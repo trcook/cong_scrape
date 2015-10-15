@@ -11,6 +11,7 @@ scrapy:
 congress:
   image: trcook/congress
   # swap comments on image and build to get docker-compose to build instead of download
-  #build: ./docker-scrapy
+  #build: ./docker-congress
   volumes:
-    - ./:/congress
+    - ./data:/congress
+  command: ["bill_info_batch", "--file_input=./plaw.csv"]
