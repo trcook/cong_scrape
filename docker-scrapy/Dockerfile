@@ -5,4 +5,5 @@ RUN apk add python-dev curl libxml2-dev libxslt-dev libffi-dev gcc musl-dev libg
 
 RUN curl https://bootstrap.pypa.io/get-pip.py | python
 RUN pip install scrapy
-CMD ["sh"]
+#CMD ["sh"]
+ENTRYPOINT ["/usr/bin/scrapy"]

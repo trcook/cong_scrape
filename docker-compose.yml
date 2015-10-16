@@ -1,7 +1,7 @@
 plaw_scrapy_vol:
-  #image: trcook/plaw_scraper
+  image: trcook/plaw_scraper
   #  swap comments on image and build to get docker-compose to build instead of download
-  build: ./plaw_scraper
+  #build: ./plaw_scraper
   name: cong_scraper_volume
 
 
@@ -15,7 +15,7 @@ get_plaws:
   volumes_from:
     - plaw_scrapy_vol
   working_dir: /scrapy/
-  command: ["scrapy", "crawl", "plaw", "-o", "/data/plaws.csv"]
+  command: ["crawl", "plaw", "-o", "/data/plaws.csv"]
 
 
 congress_scrape:
