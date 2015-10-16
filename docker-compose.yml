@@ -1,5 +1,5 @@
 congress_scrapy_vol:
-  image: trcook/cong_scrape
+  image: trcook/plaw_scraper
   # swap to build:
   # build: ./congress
   name: cong_scraper_volume
