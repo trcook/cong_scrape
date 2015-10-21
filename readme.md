@@ -11,3 +11,4 @@ Note: These instructions are specific to systems that can run docker-compose. At
 6. Now it's time to search
 
 # Searching
+to search, we use bills.py and python. This runs on standard libraries, so I didn't dockerize it. 
