@@ -1,5 +1,6 @@
 # Setup:
 Note: These instructions are specific to systems that can run docker-compose. At the moment, this is limited to osx/linux machines. Additionally, these instructions are oriented towards use on a desktop system.
+
 1. Install Docker.
 2. Download the repo and navigate to its root in a shell
   * Technically, you only need the `docker-compose.yml` file. You can just download that and put it in a directory with a subdirectory called `data`
