@@ -1,6 +1,6 @@
 """bills module will call up json files loaded. Optionally allow for search by regex.
 """
-import os, re, json, sys, argparse, logging
+import os, re, json, sys, argparse, logging,csv
 logging.basicConfig(format='[%(asctime)s %(levelname)s] %(message)s',\
                     level=logging.DEBUG,\
                     datefmt='%H:%M:%S')
@@ -21,12 +21,21 @@ class Bills(object):
     def getrecords(self, fields, **kwargs):
         """ grab specified json keys from the first n files in bills.records """
         if 'n' in kwargs:
-            files = self.files[0:kwargs['n']] if kwargs['n'] else self.files
+            files = self.files[0:kwargs['n']]
         else:
             files = self.files
         for j in files:
-            self.records.append({i:get_json(j)[i] for i in fields})
-
+            rec = {}
+            for i in fields:
+                rec_key = re.sub('(.+?\.)(\w+)$','\\2',i)
+                rec_val = get_path(get_json(j),i)
+                rec_val = rec_val.replace('\n',' \\n ')\
+                            if type(rec_val) is unicode else rec_val
+                logging.debug("type is %s"%type(rec_val).__name__)
+                rec[rec_key] = rec_val
+                self.records.append(rec)
+            # self.records.append({i:get_json(j)[i] for i in fields})
+            # self.records.append({re.sub('(.+?\.)(\w+)$','\\2',i):get_path(get_json(j),i) for i in fields})
 
     def search_records(self, key, loc, regex_str):
         """search with this method"""
@@ -63,13 +72,15 @@ if __name__ == "__main__":
     PARSER.add_argument('--fields',dest='record_key',
                         metavar='record_keys', type=str, nargs='+',
                         help='the fields to keep (seperate with space. Must be top-level portion of record). E.g. [\'summary\' \'enacted_as\']',\
-                        default=["summary","enacted_as"])
+                        default=["summary","enacted_as","bill_id"])
     PARSER.add_argument('--regex',dest='regex',
                         metavar='regex', type=str,
                         help='the regex string to use (defaults to (\w{0,10}end(?:\w+?\s){0,6}fund.+?\s) )',\
                         default="(\w{0,10}end(?:\w+?\s){0,6}fund.+?\s)")
     PARSER.add_argument('--out','-o',dest='out',metavar='output_file',\
                         type=str,help='file for output')
+    PARSER.add_argument('--format',dest='format',metavar='output_format',\
+                        type=str,help='file format (ifnot implicit from path). Can be either json or csv')
     ARGS = PARSER.parse_args()
     ld=logging.debug
     ld("Search key %s"%ARGS.search_key)
@@ -91,6 +102,19 @@ if __name__ == "__main__":
     X.search_records("match", ARGS.search_key,\
                       ARGS.regex)
     if ARGS.out:
+        output = [i for i in X.records if i['match_len']>0]
+        outext =  os.path.splitext(ARGS.out)[1]
+        ld(outext)
         with file(ARGS.out,'wb') as f:
-            json.dump([i for i in X.records if i['match_len']>0],f)
-            f.close()
+            if ARGS.format == 'json' or \
+                re.findall(outext,'\.json',flags=re.IGNORECASE):
+                json.dump(output,f)
+                f.close()
+            elif ARGS.format == 'csv' or\
+                re.findall(outext,'\.csv',flags=re.IGNORECASE):
+                fieldnames = output[0].keys()
+                cwriter = csv.DictWriter(f,delimiter=',',fieldnames=fieldnames)
+                cwriter.writeheader()
+                for i in output:
+                    cwriter.writerow(i)
+                f.close()
