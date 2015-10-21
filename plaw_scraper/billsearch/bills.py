@@ -1,6 +1,6 @@
 """bills module will call up json files loaded. Optionally allow for search by regex.
 """
-import os, re, sys, json, argparse, logging, csv
+import os, re, json, argparse, logging, csv
 LOGGO = logging.getLogger('loggo')
 LD = LOGGO.debug
 logging.basicConfig(format='[%(asctime)s %(levelname)s] %(message)s',\
@@ -127,10 +127,8 @@ if __name__ == "__main__":
     LD(msg="Record key type:  %s"%type(ARGS.record_key).__name__)
     LD(msg="REGEX %s"%ARGS.regex)
     LD(msg="REGEX key type:  %s"%type(ARGS.regex).__name__)
-    # if isinstance(ARGS.search_key, str):
-    #     LD('Converting search_key to list')
-    #     ARGS.search_key = [ARGS.search_key]
-    #     LD(ARGS.search_key)
+
+    # checking and converting types if needed
     if isinstance(ARGS.record_key, str):
         LD('Converting record_key to list')
         ARGS.record_key = [ARGS.record_key]
@@ -159,7 +157,7 @@ if __name__ == "__main__":
 
         OUTEXT = os.path.splitext(ARGS.out)[1]
         LD(OUTEXT)
-        with file(ARGS.out, 'wb') as f:
+        with file(ARGS.out, 'a') as f:
             if re.findall(OUTEXT, r'\.json', flags=re.IGNORECASE):
                 json.dump(OUTPUT, f)
                 f.close()
