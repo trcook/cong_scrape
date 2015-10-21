@@ -157,6 +157,7 @@ if __name__ == "__main__":
 
         OUTEXT = os.path.splitext(ARGS.out)[1]
         LD(OUTEXT)
+        WRITE_HEAD = False if os.path.isfile(ARGS.out) else True
         with file(ARGS.out, 'a') as f:
             if re.findall(OUTEXT, r'\.json', flags=re.IGNORECASE):
                 json.dump(OUTPUT, f)
@@ -164,7 +165,7 @@ if __name__ == "__main__":
             elif re.findall(OUTEXT, r'\.csv', flags=re.IGNORECASE):
                 FIELDNAMES = OUTPUT[0].keys()
                 CWRITER = csv.DictWriter(f, delimiter=',', fieldnames=FIELDNAMES)
-                CWRITER.writeheader()
+                if WRITE_HEAD: CWRITER.writeheader()
                 for i in OUTPUT:
                     CWRITER.writerow(i)
                 f.close()
