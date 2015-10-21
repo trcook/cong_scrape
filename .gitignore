@@ -1,3 +1,4 @@
 *.pyc
 *.csv
 *Rapp.history
+data/
