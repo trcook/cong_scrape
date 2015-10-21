@@ -1,12 +1,12 @@
 """bills module will call up json files loaded. Optionally allow for search by regex.
 """
 import os, re, json, argparse, logging, csv
-loggo = logging.getLogger('loggo')
-ld=loggo.debug
+LOGGO = logging.getLogger('loggo')
+LD = LOGGO.debug
 logging.basicConfig(format='[%(asctime)s %(levelname)s] %(message)s',\
                     level=logging.ERROR,\
                     datefmt='%H:%M:%S')
-loggo.setLevel(logging.DEBUG)
+LOGGO.setLevel(logging.DEBUG)
 class Bills(object):
     """Bills class. go Bills! """
     def __init__(self, base_dir):
@@ -31,7 +31,7 @@ class Bills(object):
             jfile = get_json(j)
             rec = {}
             for field in fields:
-                ld(self.files[idx])
+                LD(self.files[idx])
                 if re.match('enacted_as', field):
                     # hard coding in way of getting and setting public law number
                     rec["PL_num"] = "PL%s-%s"%\
@@ -95,27 +95,25 @@ if __name__ == "__main__":
                         default=r"(\w{0,10}end(?:\w+?\s){0,6}fund.+?\s)")
     PARSER.add_argument('--verbose', '-v', dest='verbose',
                         metavar='output_file',
-                            type=str, help='file for output')
+                        type=str, help='file for output')
     PARSER.add_argument('--out', '-o', dest='out', metavar='output_file',
                         type=str, help='file for output')
     ARGS = PARSER.parse_args()
-    ld("Search key %s"%ARGS.search_key)
-    ld("Search key type: %s"%type(ARGS.search_key).__name__)
-    ld("Record key %s"%ARGS.record_key)
-    ld("Record key type:  %s"%type(ARGS.record_key).__name__)
-    ld("REGEX %s"%ARGS.regex)
-    ld("REGEX key type:  %s"%type(ARGS.regex).__name__)
+    LD(msg="Search key %s"%ARGS.search_key)
+    LD(msg="Search key type: %s"%type(ARGS.search_key).__name__)
+    LD(msg="Record key %s"%ARGS.record_key)
+    LD(msg="Record key type:  %s"%type(ARGS.record_key).__name__)
+    LD(msg="REGEX %s"%ARGS.regex)
+    LD(msg="REGEX key type:  %s"%type(ARGS.regex).__name__)
     if isinstance(ARGS.search_key, str):
-        ld('Converting search_key to list')
+        LD('Converting search_key to list')
         ARGS.search_key = [ARGS.search_key]
     if isinstance(ARGS.record_key, str):
-        ld('Converting record_key to list')
+        LD('Converting record_key to list')
         ARGS.record_key = [ARGS.record_key]
 # turn off debug messages after this unless requested
-    if ARGS.verbose:
-        logging.basicConfig(format='[%(asctime)s %(levelname)s] %(message)s',\
-                            level=logging.ERROR,\
-                            datefmt='%H:%M:%S')
+    if not ARGS.verbose:
+        LOGGO.setLevel(logging.ERROR)
     X = Bills(ARGS.datadir)
     if len(X.files) < 1:
         logging.error("No Files Found")
@@ -126,7 +124,7 @@ if __name__ == "__main__":
         # return only matching data
         OUTPUT = [i for i in X.records if i['match_len'] > 0]
         OUTEXT = os.path.splitext(ARGS.out)[1]
-        ld(OUTEXT)
+        LD(OUTEXT)
         with file(ARGS.out, 'wb') as f:
             if re.findall(OUTEXT, r'\.json', flags=re.IGNORECASE):
                 json.dump(OUTPUT, f)
