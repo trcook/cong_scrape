@@ -1,8 +1,6 @@
 plaw_scrapy_vol:
   image: trcook/plaw_scraper
   #  swap comments on image and build to get docker-compose to build instead of download
-  # TUrn off following volumes -- they are for testing
-  
   name: cong_scraper_volume
 
 
