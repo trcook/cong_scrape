@@ -1,6 +1,6 @@
 """bills module will call up json files loaded. Optionally allow for search by regex.
 """
-import os, re, json, argparse, logging, csv
+import os, re, sys, json, argparse, logging, csv
 LOGGO = logging.getLogger('loggo')
 LD = LOGGO.debug
 logging.basicConfig(format='[%(asctime)s %(levelname)s] %(message)s',\
@@ -21,10 +21,10 @@ class Bills(object):
                     for j in     paths[2] if j.endswith(ext_search)]
 
 
-    def getrecords(self, fields, **kwargs):
+    def getrecords(self, fields, n=None):
         """ grab specified json keys from the first n files in bills.records """
-        if 'n' in kwargs:
-            files = self.files[0:kwargs['n']]
+        if n:
+            files = self.files[0:n]
         else:
             files = self.files
         for idx, j in enumerate(files):
@@ -46,18 +46,18 @@ class Bills(object):
 
     def search_records(self, key, loc, regex_str,**kwargs):
         """search with this method"""
-        LOGGO.error(self.records)
+        LD(self.records)
         for record in self.records:
-            LOGGO.error(record)
+            LD(record)
             search_loc = get_path(record, "%s"% loc)
-            LOGGO.error(type(search_loc))
-            LOGGO.error(loc)
+            LD(type(search_loc))
+            LD(msg="location is %s"%loc)
             record["%s_text"%key] = re.findall(regex_str, search_loc)
             record["%s_len"%key] = len(record["%s_text"%key])
             if (kwargs['notext'] if 'notext' in kwargs else False):
-                root_key = re.findall(r'\w+?(?=\.|$)', loc)
+                root_key = re.findall(r'\w+?(?=\.|$)', loc)[0]
                 record[root_key] = None
-        LOGGO.error(self.records)
+        LD(self.records)
         return
 
 def get_path(dct, path):
@@ -94,7 +94,7 @@ if __name__ == "__main__":
                         the fields to keep (seperate with space.).  E.g. \'summary\' \'enacted_as\'. Seperate nested levels with a period -- to get the \"text\" part of \"summary\", write \'summary.text\'.
                         When traversing nested levels, only the last element will be preserved as the header name in the output. In other words, \'summary.text\' will yeild \'text\' as the record key (i.e. header in output). This is important to note when specifying a complimentary search_key (see search_key). Defaults pull \'summary.text\' as a field and search key as \'text\'
                         ''',\
-                        default=["summary.text", "enacted_as.number", "bill_id"])
+                        default=["summary.text", "enacted_as", "bill_id"])
     PARSER.add_argument('--regex', dest='regex',
                         metavar='regex', type=str,
                         help=r'''the regex string to use (defaults to
@@ -106,6 +106,7 @@ if __name__ == "__main__":
     PARSER.add_argument('--out', '-o', dest='out', metavar='output_file',
                         type=str, help='file for output')
     PARSER.add_argument('--keeptext','-k', dest='notext', action='store_false')
+    PARSER.add_argument('-n', dest='n', type=int,help='number of records to search -- useful for debugging',default=None)
     ARGS = PARSER.parse_args()
     LD(msg=ARGS.notext)
     LD(msg="Search key %s"%ARGS.search_key)
@@ -114,25 +115,29 @@ if __name__ == "__main__":
     LD(msg="Record key type:  %s"%type(ARGS.record_key).__name__)
     LD(msg="REGEX %s"%ARGS.regex)
     LD(msg="REGEX key type:  %s"%type(ARGS.regex).__name__)
-    if isinstance(ARGS.search_key, str):
-        LD('Converting search_key to list')
-        ARGS.search_key = [ARGS.search_key]
-        LD(ARGS.search_key)
+    # if isinstance(ARGS.search_key, str):
+    #     LD('Converting search_key to list')
+    #     ARGS.search_key = [ARGS.search_key]
+    #     LD(ARGS.search_key)
     if isinstance(ARGS.record_key, str):
         LD('Converting record_key to list')
         ARGS.record_key = [ARGS.record_key]
 # turn off debug messages after this unless requested
     if not ARGS.verbose:
-        LOGGO.setLevel(logging.ERROR)
+        LOGGO.setLevel(logging.WARNING)
     X = Bills(ARGS.datadir)
     if len(X.files) < 1:
         logging.error("No Files Found")
-    X.getrecords(ARGS.record_key, n=1)
+    X.getrecords(ARGS.record_key, n=ARGS.n if ARGS.n else None)
     X.search_records("match", ARGS.search_key,\
                       ARGS.regex, notext=ARGS.notext)
     if ARGS.out:
         # return only matching data
         OUTPUT = [i for i in X.records if i['match_len'] > 0]
+        if len(OUTPUT)<1:
+            LOGGO.warn("No Matches Found!!!")
+            sys.exit(1)
+
         OUTEXT = os.path.splitext(ARGS.out)[1]
         LD(OUTEXT)
         with file(ARGS.out, 'wb') as f:
