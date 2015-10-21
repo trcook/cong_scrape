@@ -42,16 +42,23 @@ class Bills(object):
                 rec_val = re.sub(r'\n', r' \\n ', rec_val)\
                             if isinstance(rec_val, unicode) else rec_val
                 rec[rec_key] = rec_val
-                self.records.append(rec)
+            self.records.append(rec)
 
-    def search_records(self, key, loc, regex_str):
+    def search_records(self, key, loc, regex_str,**kwargs):
         """search with this method"""
-        records = self.records
-        for record in records:
+        LOGGO.error(self.records)
+        for record in self.records:
+            LOGGO.error(record)
             search_loc = get_path(record, "%s"% loc)
+            LOGGO.error(type(search_loc))
+            LOGGO.error(loc)
             record["%s_text"%key] = re.findall(regex_str, search_loc)
             record["%s_len"%key] = len(record["%s_text"%key])
-
+            if (kwargs['notext'] if 'notext' in kwargs else False):
+                root_key = re.findall(r'\w+?(?=\.|$)', loc)
+                record[root_key] = None
+        LOGGO.error(self.records)
+        return
 
 def get_path(dct, path):
     """ paths to nested json more sensibly """
@@ -98,7 +105,9 @@ if __name__ == "__main__":
                         type=str, help='file for output')
     PARSER.add_argument('--out', '-o', dest='out', metavar='output_file',
                         type=str, help='file for output')
+    PARSER.add_argument('--keeptext','-k', dest='notext', action='store_false')
     ARGS = PARSER.parse_args()
+    LD(msg=ARGS.notext)
     LD(msg="Search key %s"%ARGS.search_key)
     LD(msg="Search key type: %s"%type(ARGS.search_key).__name__)
     LD(msg="Record key %s"%ARGS.record_key)
@@ -108,6 +117,7 @@ if __name__ == "__main__":
     if isinstance(ARGS.search_key, str):
         LD('Converting search_key to list')
         ARGS.search_key = [ARGS.search_key]
+        LD(ARGS.search_key)
     if isinstance(ARGS.record_key, str):
         LD('Converting record_key to list')
         ARGS.record_key = [ARGS.record_key]
@@ -117,9 +127,9 @@ if __name__ == "__main__":
     X = Bills(ARGS.datadir)
     if len(X.files) < 1:
         logging.error("No Files Found")
-    X.getrecords(ARGS.record_key)
+    X.getrecords(ARGS.record_key, n=1)
     X.search_records("match", ARGS.search_key,\
-                      ARGS.regex)
+                      ARGS.regex, notext=ARGS.notext)
     if ARGS.out:
         # return only matching data
         OUTPUT = [i for i in X.records if i['match_len'] > 0]
