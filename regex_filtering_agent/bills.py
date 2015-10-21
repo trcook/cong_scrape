@@ -63,11 +63,13 @@ if __name__ == "__main__":
     PARSER.add_argument('--fields',dest='record_key',
                         metavar='record_keys', type=str, nargs='+',
                         help='the fields to keep (seperate with space. Must be top-level portion of record). E.g. [\'summary\' \'enacted_as\']',\
-                        default=["summary"])
+                        default=["summary","enacted_as"])
     PARSER.add_argument('--regex',dest='regex',
                         metavar='regex', type=str,
                         help='the regex string to use (defaults to (\w{0,10}end(?:\w+?\s){0,6}fund.+?\s) )',\
                         default="(\w{0,10}end(?:\w+?\s){0,6}fund.+?\s)")
+    PARSER.add_argument('--out','-o',dest='out',metavar='output_file',\
+                        type=str,help='file for output')
     ARGS = PARSER.parse_args()
     ld=logging.debug
     ld("Search key %s"%ARGS.search_key)
@@ -85,7 +87,10 @@ if __name__ == "__main__":
     X = Bills(ARGS.datadir)
     if len(X.files) < 1:
         logging.error("No Files Found")
-    X.getrecords(ARGS.record_key)
+    X.getrecords(ARGS.record_key,n=500)
     X.search_records("match", ARGS.search_key,\
-                    #  ARGS.regex)
-    # print [i['match_len'] for i in X.records if i['match_len'] > 0]
+                      ARGS.regex)
+    if ARGS.out:
+        with file(ARGS.out,'wb') as f:
+            json.dump([i for i in X.records if i['match_len']>0],f)
+            f.close()
