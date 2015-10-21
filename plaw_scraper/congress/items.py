@@ -16,5 +16,4 @@ class CongressItem(scrapy.Item):
 class PLawItem(scrapy.Item):
     bill=scrapy.Field()
     plaw=scrapy.Field()
-    pass    
-
+    pass

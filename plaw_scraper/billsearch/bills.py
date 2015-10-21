@@ -71,6 +71,18 @@ def get_json(file_name):
     with open(file_name, 'rb') as thefile:
         return json.load(thefile)
 
+class NoFilesError(Exception):
+    def __init__(self, s):
+        self.val = s
+        print self.val
+    def __str__(self):
+        return repr(self.val)
+class NoMatchesError(Exception):
+    def __init__(self, s):
+        self.val = s
+        print self.val
+    def __str__(self):
+        return repr(self.val)
 
 if __name__ == "__main__":
     PARSER = argparse.ArgumentParser(description='Process files and\
@@ -122,12 +134,19 @@ if __name__ == "__main__":
     if isinstance(ARGS.record_key, str):
         LD('Converting record_key to list')
         ARGS.record_key = [ARGS.record_key]
-# turn off debug messages after this unless requested
+
+    # turn off debug messages after this unless requested
     if not ARGS.verbose:
         LOGGO.setLevel(logging.WARNING)
+
+    # pull bill listing from specified directory:
     X = Bills(ARGS.datadir)
+
+    # handle if no files found
     if len(X.files) < 1:
-        logging.error("No Files Found")
+        LOGGO.error("No Files Found")
+        raise NoFilesError("directory searched: %s"%ARGS.datadir)
+
     X.getrecords(ARGS.record_key, n=ARGS.n if ARGS.n else None)
     X.search_records("match", ARGS.search_key,\
                       ARGS.regex, notext=ARGS.notext)
@@ -136,7 +155,7 @@ if __name__ == "__main__":
         OUTPUT = [i for i in X.records if i['match_len'] > 0]
         if len(OUTPUT)<1:
             LOGGO.warn("No Matches Found!!!")
-            sys.exit(1)
+            raise NoMatchesError("Pattern was %s"%ARGS.regex)
 
         OUTEXT = os.path.splitext(ARGS.out)[1]
         LD(OUTEXT)
