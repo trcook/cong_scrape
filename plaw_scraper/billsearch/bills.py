@@ -21,10 +21,10 @@ class Bills(object):
                     for j in     paths[2] if j.endswith(ext_search)]
 
 
-    def getrecords(self, fields, n=None):
+    def getrecords(self, fields, numb=None):
         """ grab specified json keys from the first n files in bills.records """
-        if n:
-            files = self.files[0:n]
+        if numb:
+            files = self.files[0:numb]
         else:
             files = self.files
         for idx, j in enumerate(files):
@@ -44,7 +44,7 @@ class Bills(object):
                 rec[rec_key] = rec_val
             self.records.append(rec)
 
-    def search_records(self, key, loc, regex_str,**kwargs):
+    def search_records(self, key, loc, regex_str, **kwargs):
         """search with this method"""
         LD(self.records)
         for record in self.records:
@@ -145,7 +145,7 @@ if __name__ == "__main__":
         LOGGO.error("No Files Found")
         raise NoFilesError("directory searched: %s"%ARGS.datadir)
 
-    X.getrecords(ARGS.record_key, n=ARGS.n if ARGS.n else None)
+    X.getrecords(ARGS.record_key, numb=ARGS.n if ARGS.n else None)
     X.search_records("match", ARGS.search_key,\
                       ARGS.regex, notext=ARGS.notext)
     if ARGS.out:
@@ -157,6 +157,7 @@ if __name__ == "__main__":
 
         OUTEXT = os.path.splitext(ARGS.out)[1]
         LD(OUTEXT)
+        WRITE_HEAD = False if os.path.isfile(ARGS.out) else True
         with file(ARGS.out, 'a') as f:
             if re.findall(OUTEXT, r'\.json', flags=re.IGNORECASE):
                 json.dump(OUTPUT, f)
@@ -164,7 +165,7 @@ if __name__ == "__main__":
             elif re.findall(OUTEXT, r'\.csv', flags=re.IGNORECASE):
                 FIELDNAMES = OUTPUT[0].keys()
                 CWRITER = csv.DictWriter(f, delimiter=',', fieldnames=FIELDNAMES)
-                CWRITER.writeheader()
+                if WRITE_HEAD: CWRITER.writeheader()
                 for i in OUTPUT:
                     CWRITER.writerow(i)
                 f.close()
