@@ -1,6 +1,6 @@
 """bills module will call up json files loaded. Optionally allow for search by regex.
 """
-import os, re, json, sys, argparse, logging
+import os, re, json, sys, argparse, logging,csv
 logging.basicConfig(format='[%(asctime)s %(levelname)s] %(message)s',\
                     level=logging.DEBUG,\
                     datefmt='%H:%M:%S')
@@ -21,12 +21,19 @@ class Bills(object):
     def getrecords(self, fields, **kwargs):
         """ grab specified json keys from the first n files in bills.records """
         if 'n' in kwargs:
-            files = self.files[0:kwargs['n']] if kwargs['n'] else self.files
+            files = self.files[0:kwargs['n']]
         else:
             files = self.files
-        for j in files:
-            self.records.append({i:get_json(j)[i] for i in fields})
-
+        for idx,j in enumerate(files):
+            rec = {}
+            for i in fields:
+                logging.debug(self.files[idx])
+                rec_key = re.sub('(.+?\.)(\w+)$','\\2',i)
+                rec_val = get_path(get_json(j),i)
+                rec_val = rec_val.replace('\n',' \\n ')\
+                            if type(rec_val) is unicode else rec_val
+                rec[rec_key] = rec_val
+                self.records.append(rec)
 
     def search_records(self, key, loc, regex_str):
         """search with this method"""
@@ -58,12 +65,15 @@ if __name__ == "__main__":
     PARSER.add_argument('--key',dest='search_key',
                         nargs=1,
                         metavar='search_key', type=str,
-                        help='the key to examine. E.g. \'summary.text\'',\
-                        default="summary.text")
+                        help='the key to examine. E.g. \'text\'. Must be sufficient to identify the unicode string to search. Seperate nested levels with a period. search_key should begin with a field that has been extracted (as directed by the --fields argument)',\
+                        default="text")
     PARSER.add_argument('--fields',dest='record_key',
                         metavar='record_keys', type=str, nargs='+',
-                        help='the fields to keep (seperate with space. Must be top-level portion of record). E.g. [\'summary\' \'enacted_as\']',\
-                        default=["summary","enacted_as"])
+                        help='''
+                        the fields to keep (seperate with space.).  E.g. \'summary\' \'enacted_as\'. Seperate nested levels with a period -- to get the \"text\" part of \"summary\", write \'summary.text\'.
+                        When traversing nested levels, only the last element will be preserved as the header name in the output. In other words, \'summary.text\' will yeild \'text\' as the record key (i.e. header in output). This is important to note when specifying a complimentary search_key (see search_key). Defaults pull \'summary.text\' as a field and search key as \'text\'
+                        ''',\
+                        default=["summary.text","enacted_as.number","bill_id"])
     PARSER.add_argument('--regex',dest='regex',
                         metavar='regex', type=str,
                         help='the regex string to use (defaults to (\w{0,10}end(?:\w+?\s){0,6}fund.+?\s) )',\
@@ -87,10 +97,21 @@ if __name__ == "__main__":
     X = Bills(ARGS.datadir)
     if len(X.files) < 1:
         logging.error("No Files Found")
-    X.getrecords(ARGS.record_key,n=500)
+    X.getrecords(ARGS.record_key)
     X.search_records("match", ARGS.search_key,\
                       ARGS.regex)
     if ARGS.out:
+        output = [i for i in X.records if i['match_len']>0]
+        outext =  os.path.splitext(ARGS.out)[1]
+        ld(outext)
         with file(ARGS.out,'wb') as f:
-            json.dump([i for i in X.records if i['match_len']>0],f)
-            f.close()
+            if re.findall(outext,'\.json',flags=re.IGNORECASE):
+                json.dump(output,f)
+                f.close()
+            elif re.findall(outext,'\.csv',flags=re.IGNORECASE):
+                fieldnames = output[0].keys()
+                cwriter = csv.DictWriter(f,delimiter=',',fieldnames=fieldnames)
+                cwriter.writeheader()
+                for i in output:
+                    cwriter.writerow(i)
+                f.close()
