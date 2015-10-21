@@ -1,7 +1,8 @@
 plaw_scrapy_vol:
   image: trcook/plaw_scraper
   #  swap comments on image and build to get docker-compose to build instead of download
-  #build: ./plaw_scraper
+  # TUrn off following volumes -- they are for testing
+  
   name: cong_scraper_volume
 
 
@@ -26,7 +27,8 @@ search_plaws:
   volumes_from:
     - plaw_scrapy_vol
   working_dir: /data
-  entrypoint: ["python /scrapy/bills.py"]
+  entrypoint: ["python", "/billsearch/bills.py"]
+  # entrypoint: ["/bin/sh"]
 
 
 

@@ -24,9 +24,10 @@ class Bills(object):
             files = self.files[0:kwargs['n']]
         else:
             files = self.files
-        for j in files:
+        for idx,j in enumerate(files):
             rec = {}
             for i in fields:
+                logging.debug(self.files[idx])
                 rec_key = re.sub('(.+?\.)(\w+)$','\\2',i)
                 rec_val = get_path(get_json(j),i)
                 rec_val = rec_val.replace('\n',' \\n ')\
@@ -72,7 +73,7 @@ if __name__ == "__main__":
                         the fields to keep (seperate with space.).  E.g. \'summary\' \'enacted_as\'. Seperate nested levels with a period -- to get the \"text\" part of \"summary\", write \'summary.text\'.
                         When traversing nested levels, only the last element will be preserved as the header name in the output. In other words, \'summary.text\' will yeild \'text\' as the record key (i.e. header in output). This is important to note when specifying a complimentary search_key (see search_key). Defaults pull \'summary.text\' as a field and search key as \'text\'
                         ''',\
-                        default=["summary.text","enacted_as.congress","enacted_as.","bill_id"])
+                        default=["summary.text","enacted_as.number","bill_id"])
     PARSER.add_argument('--regex',dest='regex',
                         metavar='regex', type=str,
                         help='the regex string to use (defaults to (\w{0,10}end(?:\w+?\s){0,6}fund.+?\s) )',\
