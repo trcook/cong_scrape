@@ -1,7 +1,9 @@
 """bills module will call up json files loaded. Optionally allow for search by regex.
 """
-import os, re, json, sys, argparse
-
+import os, re, json, sys, argparse, logging
+logging.basicConfig(format='[%(asctime)s %(levelname)s] %(message)s',\
+                    level=logging.DEBUG,\
+                    datefmt='%H:%M:%S')
 class Bills(object):
     """Bills class. go Bills! """
     def __init__(self, base_dir):
@@ -50,32 +52,40 @@ def get_json(file_name):
 if __name__ == "__main__":
     PARSER = argparse.ArgumentParser(description='Process files and\
                                     return search results.')
-    PARSER.add_argument('dir', metavar='<path>', type=str,
+    PARSER.add_argument('datadir',
+                        metavar='<path>', type=str,
                         help='the path to search')
-    PARSER.add_argument('--key',dest='search_key', metavar='search_key', type=str,
-                        help='the key to examine. E.g. \'summary\'',\
-                        default="summary")
-    PARSER.add_argument('--fields',dest='record_key', metavar='record_keys', type=str, nargs='+',
-                       help='the records to keep. E.g. \'summary enacted_as\'',\
-                        default="summary")
-    PARSER.add_argument('--regex',dest='regex', metavar='regex', type=str,
-                       help='the regex string to use (defaults to (\w{0,10}end(?:\w+?\s){0,6}fund.+?\s) )',\
+    PARSER.add_argument('--key',dest='search_key',
+                        nargs=1,
+                        metavar='search_key', type=str,
+                        help='the key to examine. E.g. \'summary.text\'',\
+                        default="summary.text")
+    PARSER.add_argument('--fields',dest='record_key',
+                        metavar='record_keys', type=str, nargs='+',
+                        help='the fields to keep (seperate with space. Must be top-level portion of record). E.g. [\'summary\' \'enacted_as\']',\
+                        default=["summary"])
+    PARSER.add_argument('--regex',dest='regex',
+                        metavar='regex', type=str,
+                        help='the regex string to use (defaults to (\w{0,10}end(?:\w+?\s){0,6}fund.+?\s) )',\
                         default="(\w{0,10}end(?:\w+?\s){0,6}fund.+?\s)")
     ARGS = PARSER.parse_args()
-    print ARGS.search_key
-    print ARGS.record_key
-    print ARGS.regex
-    print re.escape(ARGS.regex)
-    if len(sys.argv) < 3:
-        X = Bills(".")
-        print "both path and regex pattern are needed"
-        sys.exit(1)
-    elif len(sys.argv) > 2:
-        print "Correct Usage: python bill PATH"
-        print len(sys.argv)
-        print sys.argv
-        sys.exit(1)
+    ld=logging.debug
+    ld("Search key %s"%ARGS.search_key)
+    ld("Search key type: %s"%type(ARGS.search_key).__name__)
+    ld("Record key %s"%ARGS.record_key)
+    ld("Record key type:  %s"%type(ARGS.record_key).__name__)
+    ld("REGEX %s"%ARGS.regex)
+    ld("REGEX key type:  %s"%type(ARGS.regex).__name__)
+    if type(ARGS.search_key) is str:
+        ld('Converting search_key to list')
+        ARGS.search_key = [ARGS.search_key]
+    if type(ARGS.record_key) is str:
+        ld('Converting record_key to list')
+        ARGS.record_key = [ARGS.record_key]
+    X = Bills(ARGS.datadir)
+    if len(X.files) < 1:
+        logging.error("No Files Found")
     X.getrecords(ARGS.record_key)
     X.search_records("match", ARGS.search_key,\
-                     ARGS.regex)
-    print [i['match_len'] for i in X.records if i['match_len'] > 0]
+                    #  ARGS.regex)
+    # print [i['match_len'] for i in X.records if i['match_len'] > 0]
