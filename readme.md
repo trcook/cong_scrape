@@ -11,4 +11,10 @@ Note: These instructions are specific to systems that can run docker-compose. At
 6. Now it's time to search
 
 # Searching
-to search, we use bills.py and python. This runs on standard libraries, so I didn't dockerize it. 
+
+Call `docker-compose run search_plaws './data' -o ./data/output.csv --regex='REGEX STRING'` to generate search and matches.
+
+```
+ docker-compose run search_plaws './data' -o output.csv --regex="(extends(?:\s\w+){0,28}\sFY)"
+```
+matches FY after extends with as many as 28 words in between
