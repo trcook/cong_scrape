@@ -21,10 +21,10 @@ class Bills(object):
                     for j in     paths[2] if j.endswith(ext_search)]
 
 
-    def getrecords(self, fields, n=None):
+    def getrecords(self, fields, numb=None):
         """ grab specified json keys from the first n files in bills.records """
-        if n:
-            files = self.files[0:n]
+        if numb:
+            files = self.files[0:numb]
         else:
             files = self.files
         for idx, j in enumerate(files):
@@ -44,7 +44,7 @@ class Bills(object):
                 rec[rec_key] = rec_val
             self.records.append(rec)
 
-    def search_records(self, key, loc, regex_str,**kwargs):
+    def search_records(self, key, loc, regex_str, **kwargs):
         """search with this method"""
         LD(self.records)
         for record in self.records:
@@ -145,7 +145,7 @@ if __name__ == "__main__":
         LOGGO.error("No Files Found")
         raise NoFilesError("directory searched: %s"%ARGS.datadir)
 
-    X.getrecords(ARGS.record_key, n=ARGS.n if ARGS.n else None)
+    X.getrecords(ARGS.record_key, numb=ARGS.n if ARGS.n else None)
     X.search_records("match", ARGS.search_key,\
                       ARGS.regex, notext=ARGS.notext)
     if ARGS.out:
