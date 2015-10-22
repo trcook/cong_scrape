@@ -58,6 +58,11 @@ class Bills(object):
             if (kwargs['notext'] if 'notext' in kwargs else False):
                 root_key = re.findall(r'\w+?(?=\.|$)', loc)[0]
                 record[root_key] = None
+            else:
+                offensive_chars= [u'\x94',u'\x92',u'\xa0',u'\x96',u'\x93']
+                root_key = re.findall(r'\w+?(?=\.|$)', loc)[0]
+                for charac in offensive_chars: record[root_key] = record[root_key].replace(charac,'')
+                # record[root_key] = type(record[root_key]).__name__
         LD(self.records)
         return
 
