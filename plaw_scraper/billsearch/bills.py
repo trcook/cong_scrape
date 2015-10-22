@@ -64,7 +64,12 @@ class Bills(object):
                 for charac in offensive_chars: record[root_key] = record[root_key].replace(charac,'')
                 # record[root_key] = type(record[root_key]).__name__
         LD(self.records)
+        self.split_records()
         return
+    def split_records(self):
+        self.records = [dict({'provision':j}.items()+i.items())\
+         for i in self.records\
+         for j in i['match_text']]
 
 def get_path(dct, path):
     """ paths to nested json more sensibly """
@@ -125,6 +130,10 @@ if __name__ == "__main__":
                         type=str, help='file for output')
     PARSER.add_argument('--keeptext','-k', dest='notext', action='store_false')
     PARSER.add_argument('-n', dest='n', type=int,help='number of records to search -- useful for debugging',default=None)
+    PARSER.add_argument('--min', dest='minimal', action='store_true',
+                            help='''output only PL number
+                            and provision -- the nuclear Scott option''')
+
     ARGS = PARSER.parse_args()
     LD(msg=ARGS.notext)
     LD(msg="Search key %s"%ARGS.search_key)
@@ -154,9 +163,12 @@ if __name__ == "__main__":
     X.getrecords(ARGS.record_key, numb=ARGS.n if ARGS.n else None)
     X.search_records("match", ARGS.search_key,\
                       ARGS.regex, notext=ARGS.notext)
+    if ARGS.minimal:
+        X.records = [{ j: i[j] for j in ['PL_num','provision'] } for i in X.records]
     if ARGS.out:
         # return only matching data
-        OUTPUT = [i for i in X.records if i['match_len'] > 0]
+        OUTPUT = X.records
+        # OUTPUT = [i for i in X.records if i['match_len'] > 0]
         if len(OUTPUT)<1:
             LOGGO.warn("No Matches Found!!!")
             raise NoMatchesError("Pattern was %s"%ARGS.regex)
