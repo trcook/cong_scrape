@@ -52,8 +52,9 @@ class Bills(object):
             search_loc = get_path(record, "%s"% loc)
             LD(type(search_loc))
             LD(msg="location is %s"%loc)
-            record["%s_text"%key] = re.findall(regex_str, search_loc)
+            record["%s_text"%key] = re.findall(regex_str, search_loc,flags=re.IGNORECASE)
             record["%s_len"%key] = len(record["%s_text"%key])
+            record["regex_string"]=regex_str
             if (kwargs['notext'] if 'notext' in kwargs else False):
                 root_key = re.findall(r'\w+?(?=\.|$)', loc)[0]
                 record[root_key] = None
