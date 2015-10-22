@@ -22,7 +22,7 @@ class PlawSpider(scrapy.Spider):
     # start_urls=['www.congress.gov/public-laws/%s-congress'% numbsuffix(i) for i in range(93,115)]
     def parse(self, response):
         yr=response.meta['yr']
-        pl=response.xpath("//th[contains(@class,'public')]/ancestor::table/tbody/tr/td[1]/text()").extract()
+        pl=response.xpath("//th[contains(@class,'public')]/ancestor::table/tbody/tr/td[1]//text()").extract()
         congnum=response.xpath("//th[contains(@class,'public')]/ancestor::table/tbody/tr/td[2]/a/text()").extract()
         congnum=[re.sub(r"\.","",congnum[i]).lower()+"-%s" % yr for i in range(len(congnum))]
         for i in range(len(congnum)):
