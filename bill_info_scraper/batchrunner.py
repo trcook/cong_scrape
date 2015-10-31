@@ -1,4 +1,12 @@
 #!/usr/bin/env python
+"""
+the entire and only reason we need this file is because there is some weval of
+an encoding problem somewhere that prevents all the bills being downloaded in
+one fell swoop. As a result, we need to run through everything once and then
+again to get the bills that didn't download and then again etc untill all get
+downloaded.
+Luckily, the library's caching features help us out here with speed.
+"""
 
 
 import logging
@@ -6,6 +14,7 @@ import argparse
 import os
 import shutil
 import subprocess
+
 
 
 LOGGO = logging.getLogger('loggo')
@@ -66,6 +75,6 @@ if __name__ == "__main__":
     LD(msg)
     x.remainder = file_len(ARGS.file)
     x.batch()
-    while x.runs < 10 and x.remainder > 1:
+    while x.runs < 30 and x.remainder > 1:
         LD(x.runs)
         x.batch()
