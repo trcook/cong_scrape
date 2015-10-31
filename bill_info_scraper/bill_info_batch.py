@@ -8,6 +8,7 @@ import time
 import datetime
 from lxml.html import fromstring, HtmlElement
 import csv
+import random
 
 # can be run on its own, just require a bill_id
 LE = logging.Logger('root')
@@ -21,6 +22,18 @@ ch.setLevel(logging.ERROR)
 LE.addHandler(ch)
 LOGGO.addHandler(FH)
 
+with open("./plaw2.csv","wb") as the_file:
+    # writing a single line to the log to keep consistency with the format of plaws.csv
+    the_file.write("bill\n")
+    the_file.close()
+
+def ranomizer(xlist):
+    """ We'll use this to make sure leftover bills get
+     properly cycled when re-running"""
+    x = [(random.random(),i) for i in xlist]
+    x.sort()
+    out = [i[1] for i in x]
+    return out
 
 def run(options):
     bill_id = options.get('bill_id', None)
@@ -38,10 +51,9 @@ def run(options):
     elif file_input:
         with open(file_input, 'rb') as f:
             cread = csv.reader(f)
-            next(cread, None) if header else ''  # removes first row if needed
+            next(cread,None) # skipping first row
             bills = [i[0] for i in cread]
-            # bills = [next(cread)[0] for i in range(0,10000)]
-            bills = bills[1:len(bills)]
+            bills = ranomizer(bills) # ensure bills are shuffled
             msg = "\ngetting %s ..." % bills[:10]
             logging.warn(msg)
         for i in bills:
