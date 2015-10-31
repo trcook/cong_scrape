@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 """bills module will call up json files loaded. Optionally allow for search by regex.
 """
 import os, re, json, argparse, logging, csv
