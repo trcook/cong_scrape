@@ -27,7 +27,10 @@ class Batcher(object):
         self.file = plaw_file
         self.runs = 0
         self.remainder = file_len(self.file)
-
+    def __str__(self):
+        print self.file
+    def pep8compliance(self):
+        pass
     def batch(self):
         if self.runs == 0:
             shutil.copy(self.file, './active.csv')
@@ -36,7 +39,8 @@ class Batcher(object):
         else:
             os.rename('plaw2.csv', 'active.csv')
         subprocess.call(
-            "/opt/theunitedstates.io/congress/run bill_info_batch --file_input=/data/active.csv", shell=True)
+            "/opt/theunitedstates.io/congress/run bill_info_batch \
+             --file_input=/data/active.csv", shell=True)
         self.runs += 1
         if os.path.exists('./plaw2.csv'):
             self.remainder = file_len('./plaw2.csv')
@@ -45,8 +49,8 @@ class Batcher(object):
 def file_len(fname):
     num = 0
     with open(fname, 'rb') as the_file:
-        for bill_num in range(len(the_file)):
-            num = bill_num
+        for bill_num in enumerate(the_file):
+            num = bill_num[0]
         the_file.close()
     if num:
         return num + 1
