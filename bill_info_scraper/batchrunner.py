@@ -40,10 +40,13 @@ class Batcher(object):
 
 
 def file_len(fname):
+    num = 0
     with open(fname,'rb') as f:
         for i, l in enumerate(f):
+            num = i
             pass
-    return i + 1
+    if num:
+        return num+1
 
 
 
@@ -56,5 +59,6 @@ if __name__ == "__main__":
     LD("dir is %s"%os.listdir('.'))
     x.remainder = file_len(ARGS.file)
     x.batch()
-    while x.runs <10 and x.remainder<50:
+    while x.runs <10 and x.remainder>3:
+        LD(x.runs)
         x.batch()
