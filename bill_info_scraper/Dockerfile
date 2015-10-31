@@ -31,9 +31,8 @@
 #  /srv/pault.ag/congress/ or /srv/io.unitedstates/congress/
 FROM unitedstates/congress
 ADD bill_info_batch.py /opt/theunitedstates.io/congress/tasks/bill_info_batch.py
+ADD batchrunner.py /opt/theunitedstates.io/congress/batchrunner.py
 
-RUN mkdir -p /congress
-WORKDIR /congress
-VOLUME /congress
-CMD []
-#ENTRYPOINT ["/opt/theunitedstates.io/congress/"]
+RUN mkdir -p /data
+WORKDIR /data
+VOLUME /data
