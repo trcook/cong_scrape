@@ -46,6 +46,8 @@ class Batcher(object):
             LD(os.getcwd())
             LD(os.listdir('.'))
         else:
+            log_name = "./RUN_%s_NOTCAPTURED.log"%self.runs
+            shutil.copy('plaw2.csv', log_name)
             os.rename('plaw2.csv', 'active.csv')
         subprocess.call(
             "/opt/theunitedstates.io/congress/run bill_info_batch \
@@ -75,6 +77,6 @@ if __name__ == "__main__":
     LD(msg)
     x.remainder = file_len(ARGS.file)
     x.batch()
-    while x.runs < 30 and x.remainder > 1:
+    while x.runs < 30 and x.remainder >= 1:
         LD(x.runs)
         x.batch()
