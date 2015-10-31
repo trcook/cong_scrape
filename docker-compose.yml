@@ -40,4 +40,5 @@ congress_scrape:
   working_dir: /data/
   # volumes:
     # - ./data:/congress
-  command: ["bill_info_batch", "--file_input=./plaws.csv"]
+  entrypoint: ['/opt/theunitedstates.io/congress/batchrunner.py']
+  command: ["plaws.csv"]

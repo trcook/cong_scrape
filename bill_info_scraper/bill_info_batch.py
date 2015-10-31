@@ -10,6 +10,16 @@ from lxml.html import fromstring, HtmlElement
 import csv
 
 # can be run on its own, just require a bill_id
+LE = logging.Logger('root')
+LOGGO = logging.Logger('logger')
+FH = logging.FileHandler("plaw2.csv")
+LOGGO.setLevel(logging.ERROR)
+LOGGOFORMATTER = logging.Formatter('%(message)s')
+FH.setFormatter(LOGGOFORMATTER)
+ch = logging.StreamHandler()
+ch.setLevel(logging.ERROR)
+LE.addHandler(ch)
+LOGGO.addHandler(FH)
 
 
 def run(options):
@@ -33,13 +43,14 @@ def run(options):
             bills = [ i[0] for i in cread ]
             # bills = [next(cread)[0] for i in range(0,10000)]
             bills = bills[1:len(bills)]
-            logging.warn("\ngetting %s ..."% [bills[i] for i in range(len(bills)/1000+3)])           
+            logging.warn("\ngetting %s ..."% [bills[i] for i in range(len(bills)/1000+3)])
         for i in bills:
             try:
                 logging.warn("\n Getting %s"%i)
                 result = fetch_bill(i, options)
                 logging.warn("\n"+str(result))
             except Exception:
+                LOGGO.error(i)
                 pass
     else:
         logging.error("To run this task directly, supply a bill_id.")
