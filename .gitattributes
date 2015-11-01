@@ -1,0 +1,2 @@
+.gitattributes merge=ours
+docker-compose.yml filter=dev_docker_compose
