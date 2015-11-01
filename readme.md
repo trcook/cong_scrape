@@ -5,6 +5,7 @@ Note: These instructions are specific to systems that can run docker-compose. At
 2. Download the repo and navigate to its root in a shell
     * Technically, you only need the `docker-compose.yml` file. You can just download that and put it in a directory with a subdirectory called `data`
 3. Make sure Docker is running and is accessible (i.e. run `eval $(docker-machine env default)`)
+4. ensure latest images are installed by running `docker-compose pull`
 4. run `docker-compose run --rm get_plaws`
     * This pulls the list of public laws using the spider defined in `./plaw-scraper`
 5. Now, run `docker-compose run --rm congress_scrape`
