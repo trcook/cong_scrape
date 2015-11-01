@@ -5,4 +5,8 @@ language: python
 
 before_install:
   - docker-compose build
-  - docker-
+  - docker-compose pull
+
+script:
+  - docker-compose run --rm get_plaws
+  - cd data
