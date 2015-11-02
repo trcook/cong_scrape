@@ -58,11 +58,12 @@ def run(options):
             logging.warn(msg)
         for i in bills:
             try:
-                logging.warn("\n Getting %s" % i)
+                #logging.warn("\n Getting %s" % i)
                 result = fetch_bill(i, options)
                 logging.warn("\n" + str(result))
             except Exception:
                 LOGGO.error(i)
+                LE.error("bill %s did not download" % i)
                 pass
     else:
         logging.error("To run this task directly, supply a bill_id.")
