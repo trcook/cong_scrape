@@ -1,4 +1,4 @@
-![](https://travis-ci.org/trcook/cong_scrape.svg?branch=master)
+[![Build Status](https://travis-ci.org/trcook/cong_scrape.svg?branch=master)](https://travis-ci.org/trcook/cong_scrape)
 
 # Setup:
 Note: These instructions are specific to systems that can run docker-compose. At the moment, this is limited to osx/linux machines. Additionally, these instructions are oriented towards use on a desktop system.
