@@ -12,7 +12,7 @@ python:
 
 script:
   - docker-compose run get_plaws>/dev/null
-  - ls
-  - sudo python testing/random_select.py
+  - nosetests testing.tests:TestPlawLen
+  - cp testing/plaws.test.csv data/plaws.csv
   - docker-compose run congress_scrape
-  - nosetests
+  - nosetests testing.tests:TestLen
