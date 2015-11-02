@@ -1,8 +1,16 @@
-sudo: false
+sudo: required
 services:
   - docker
 language: python
 
 before_install:
   - docker-compose build
-  - docker-
+  - docker-compose pull
+
+python:
+  - "2.7"
+
+script:
+  - docker-compose run get_plaws
+  - python testing/random_select.py
+  - docker-compose run congress_scrape
