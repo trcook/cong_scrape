@@ -29,7 +29,8 @@ PARSER = argparse.ArgumentParser()
 PARSER.add_argument('file', metavar='<path>', type=str,
                     help='path to the file with public laws')
 
-
+if not os.path.exists("./log"):
+    os.mkdir("./log")
 class Batcher(object):
 
     def __init__(self, plaw_file):
@@ -46,8 +47,8 @@ class Batcher(object):
             LD(os.getcwd())
             LD(os.listdir('.'))
         else:
-            log_name = "./RUN_%s_NOTCAPTURED.log"%self.runs
-            shutil.copy('plaw2.csv', log_name)
+            log_name = "./log/RUN_%s_NOTCAPTURED.log"%self.runs
+            shutil.copy('plaw2.csv', log_name,)
             os.rename('plaw2.csv', 'active.csv')
         subprocess.call(
             "/opt/theunitedstates.io/congress/run bill_info_batch \
@@ -77,6 +78,6 @@ if __name__ == "__main__":
     LD(msg)
     x.remainder = file_len(ARGS.file)
     x.batch()
-    while x.runs < 30 and x.remainder >= 1:
+    while x.runs < 30 and x.remainder > 1:
         LD(x.runs)
         x.batch()
