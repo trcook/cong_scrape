@@ -1,3 +1,3 @@
 .gitattributes merge=ours
 readme.md merge=ours
-docker-compose.yml filter=dev_docker_compose
+docker-compose.yml filter=master_docker_compose
