@@ -13,6 +13,6 @@ python:
 script:
   - docker-compose run get_plaws>/dev/null
   - nosetests testing.tests:TestPlawLen
-  - cp testing/plaws.test.csv data/plaws.csv
+  - sudo cp testing/plaws.test.csv data/plaws.csv
   - docker-compose run congress_scrape
   - nosetests testing.tests:TestLen
