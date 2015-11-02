@@ -15,4 +15,4 @@ script:
   - nosetests testing.tests:TestPlawLen
   - sudo cp testing/plaws.test.csv data/plaws.csv
   - docker-compose run congress_scrape
-  - nosetests testing.tests:TestLen
+  - sudo nosetests testing.tests:TestLen
