@@ -78,6 +78,9 @@ if __name__ == "__main__":
     LD(msg)
     x.remainder = file_len(ARGS.file)
     x.batch()
-    while x.runs < 30 and x.remainder > 1:
-        LD(x.runs)
+    while x.runs < 30 and x.remainder > 2:
+        msg = "files remaining: %s"%x.remainder
+        LD(msg)
+        msg = "run number: %s"%x.runs
+        LD(msg)
         x.batch()
