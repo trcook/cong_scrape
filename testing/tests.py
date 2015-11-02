@@ -17,4 +17,4 @@ class TestLen:
             source.close()
             cls.lenplaw = num
     def test_close(self):
-        assert abs(self.lenfiles-self.lenplaw)<20, "Downloaded files not within 20 of sampled public laws"
+        assert abs(self.lenfiles-self.lenplaw) < 3, "Downloaded files not within 20 of sampled public laws"
