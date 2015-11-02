@@ -15,3 +15,4 @@ script:
   - ls
   - sudo python testing/random_select.py
   - docker-compose run congress_scrape
+  - nosetests
