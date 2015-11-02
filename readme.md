@@ -24,14 +24,22 @@ trcook/cong_scrape root:
 │   ├── active.csv
 │   ├── cache
 │   │   ├── 93
-│   │    ...
-│   │   ├── 114
+│   │   ├── 94
+│   │   ...
+│   │   ├── 113
+│   │   └── 114
 │   ├── data
 │   │   ├── 93
-│   │    ...
+│   │   ├── 94
+│   │   ...
+│   │   ├── 113
 │   │   └── 114
-│   ├── plaw2.csv
-│   └── plaws.csv
+│   ├── log
+│   │   ├── RUN_1_NOTCAPTURED.log
+│   │   ├── RUN_2_NOTCAPTURED.log
+│   │   ...
+│   │   ├── RUN_29_NOTCAPTURED.log
+│   │   └── RUN_30_NOTCAPTURED.log
 | ...
 
 ```
