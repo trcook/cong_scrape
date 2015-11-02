@@ -11,6 +11,7 @@ python:
   - "2.7"
 
 script:
-  - docker-compose run get_plaws
-  - python testing/random_select.py
+  - docker-compose run -d get_plaws
+  - ls
+  - sudo python testing/random_select.py
   - docker-compose run congress_scrape
