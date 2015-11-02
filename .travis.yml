@@ -5,7 +5,7 @@ language: python
 
 before_install:
   - docker-compose build
-  - docker-compose pull
+
 
 python:
   - "2.7"
