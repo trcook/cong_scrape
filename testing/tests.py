@@ -42,6 +42,5 @@ class TestLen(object):
         LD.info(msg)
         msg = "# of bills processed %s"%cls.lenfiles
         LD.info(msg)
-    @classmethod
     def test_close(self):
         assert abs(self.lenfiles-self.lenplaw) < 3, "Downloaded files not within 20 of sampled public laws"
