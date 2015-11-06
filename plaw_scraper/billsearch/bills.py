@@ -72,6 +72,8 @@ class Bills(object):
         self.records = [dict({'provision':j}.items()+i.items())\
          for i in self.records\
          for j in i['match_text']]
+        for i in self.records:
+            i.pop('match_text', None)
 
 def get_path(dct, path):
     """ paths to nested json more sensibly """
