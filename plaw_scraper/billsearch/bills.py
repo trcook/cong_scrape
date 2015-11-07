@@ -12,10 +12,10 @@ import sys
 """
 try to import pandas
 """
-try:
-    import pandas as pd
-except ImportError:
-    pass
+# try:
+#     import pandas as pd
+# except ImportError:
+#     pass
 
 LOGGO = logging.getLogger('loggo')
 LD = LOGGO.debug
@@ -99,7 +99,6 @@ class Bills(object):
                 if isinstance(i,list):
                     for jdx,j in enumerate(i):
                         self.panda.loc[idxi,"provision%s"%(jdx+1)]=j
-                        print type(self.panda.loc[idxi,"provision%s"%(jdx+1)])
             self.panda.drop(["match_text"],axis=1,inplace=True)
             for idxi,i in enumerate(self.panda["%s_position"%key]):
                 if isinstance(i,list):
@@ -121,7 +120,7 @@ class Bills(object):
             self.records = self.panda
             self.records = self.panda.to_dict('records')
         else:
-            self.records = [dict({'provision': j,'position':p}.items() + i.items())
+            self.records = [dict({'provision': j,'position_start':p[0] if p else '','position_end':p[1] if p else ''}.items() + i.items())
                             for i in self.records
                             for j,p in zip(
                                 i['%s_text'%key],i['%s_position'%key]
@@ -230,7 +229,7 @@ if __name__ == "__main__":
     X.search_records("match", ARGS.search_key,
                      ARGS.regex, notext=ARGS.notext)
     if ARGS.minimal:
-        X.records = [{j: i[j] for j in ['PL_num', 'provision']}
+        X.records = [{j: i[j] for j in ['PL_num', 'provision','position_start','position_end']}
                      for i in X.records]
     if ARGS.out:
         # return only matching data
