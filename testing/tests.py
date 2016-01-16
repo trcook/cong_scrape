@@ -19,11 +19,11 @@ class TestPlawLen(object):
             cls.lenplaw = num
         msg = "# plaws found: %s"%cls.lenplaw
         LD.info(msg)
-        msg = "# plaws expected: 10819"
+        msg = "# plaws expected: 10861"
         LD.info(msg)
     def test_plawlen(self):
-        assert abs(self.lenplaw - 10820) < 2, "Downloaded files not within 20 of sampled public laws"
-        msg = "negligable diff of: %s"%abs(self.lenplaw - 10820)
+        assert abs(self.lenplaw - 10861) < 2, "Downloaded files not within 20 of sampled public laws"
+        msg = "negligable diff of: %s"%abs(self.lenplaw - 10861)
         LD.info(msg)
 
 class TestLen(object):
