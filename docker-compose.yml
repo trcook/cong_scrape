@@ -54,4 +54,4 @@ all_laws:
   image: trcook/congress
   volumes:
     - ./fulldata:/data
-  command: ["bills"]
+  entrypoint: ["/opt/theunitedstates.io/congress/run","bills"]
