@@ -45,3 +45,13 @@ congress_scrape:
     # - ./data:/congress
   entrypoint: ['/opt/theunitedstates.io/congress/batchrunner.py']
   command: ["plaws.csv"]
+
+
+
+
+
+all_laws:
+  image: trcook/congress
+  volumes:
+    - ./fulldata:/data
+  command: ["bills"]
